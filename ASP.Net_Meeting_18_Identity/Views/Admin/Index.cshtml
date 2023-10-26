@@ -15,10 +15,19 @@
             <a asp-action="AddProduct" asp-controller="Admin" class="btn btn-primary">Add Product</a>
         </div>
         <div class="col-md-4">
-            <a asp-action="AddCategory" asp-controller="Admin" class="btn btn-primary">Add Category</a>
+            <a asp-action="Create" asp-controller="Categories" class="btn btn-primary">Add Category</a>
         </div>
         <div class="col-md-4">
-            <a asp-action="IndexCategory" asp-controller="Admin" class="btn btn-primary">Categories</a>
+            <a asp-action="Index" asp-controller="Categories" class="btn btn-primary">Categories</a>
+        </div>
+        <div class="col-md-4">
+            <a class="btn btn-primary" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+        </div>
+        <div class="col-md-4">
+            <a class="btn btn-primary" asp-area="" asp-controller="User" asp-action="Index">Users</a>
+        </div>
+        <div class="col-md-4">
+            <a class="btn btn-primary" asp-area="" asp-controller="Claims" asp-action="Index">Claims</a>
         </div>
     </div>
 </div>

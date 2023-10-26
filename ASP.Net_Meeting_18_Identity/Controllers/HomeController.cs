@@ -10,17 +10,17 @@ namespace ASP.Net_Meeting_18_Identity.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ShopDbContext context;
+        private readonly ShopDbContext dbContext;
 
         public HomeController(ILogger<HomeController> logger, ShopDbContext context)
         {
             _logger = logger;
-            this.context = context;
+            this.dbContext = context;
         }
 
         public async Task<IActionResult> Index(string? category)
         {
-            IQueryable<Product> products =context.Products.Include(t=>t.Category).Include(t=>t.Photos);
+            IQueryable<Product> products =dbContext.Products.Include(t=>t.Category).Include(t=>t.Photos);
             if(category!=null)
             {
                 products = products.Where(t => t.Category!.Title == category);
@@ -33,7 +33,24 @@ namespace ASP.Net_Meeting_18_Identity.Controllers
             };
             return View(vM);
         }
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null || dbContext.Products == null)
+            {
+                return NotFound();
+            }
 
+            var product = await dbContext.Products
+                .Include(p => p.Category)
+                .Include(t => t.Photos)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
         public IActionResult Privacy()
         {
             return View();
