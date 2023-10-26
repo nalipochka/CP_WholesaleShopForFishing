@@ -19,9 +19,9 @@
             <tr>
                 <td>@(++num)</td>
                 <td>@item.Product.Title</td>
-                <td>@item.Product.Price.ToString("# EUR")</td>
+                @* <td>@item.Product.Price.ToString("# EUR")</td> *@
                 <td>@item.Count</td>
-                <td>@((item.Count * item.Product.Price).ToString("# EUR"))</td>
+                @* <td>@((item.Count * item.Product.Price).ToString("# EUR"))</td> *@
                 <td>
                     <form asp-action="Delete" asp-route-id="@item.Product.Id" method="post">
                         <button type="submit" class="btn-sm btn-outline-danger">

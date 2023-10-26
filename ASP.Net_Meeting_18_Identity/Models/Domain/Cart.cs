@@ -36,6 +36,6 @@ namespace ASP.Net_Meeting_18_Identity.Models.Domain
         {
             cartItems.Clear();
         }
-        public double TotalPrice => cartItems.Sum(t => t.Product.Price * t.Count);
+        public double TotalPrice => cartItems.Sum(t => t.Product.WholesalePrice * t.Count);
     }
 }

@@ -104,6 +104,7 @@ namespace ASP.Net_Meeting_18_Identity.Controllers
 
         public async Task<IActionResult> AuthRedirect()
         {
+            string errorType = "";
             ExternalLoginInfo loginInfo = await signInManager.GetExternalLoginInfoAsync();
             if (loginInfo == null)
             {
@@ -115,38 +116,57 @@ namespace ASP.Net_Meeting_18_Identity.Controllers
                 loginInfo.Principal.FindFirst(ClaimTypes.Name)?.Value,
                 loginInfo.Principal.FindFirst(ClaimTypes.Email)?.Value,
             };
-            if(loginResult.Succeeded)
+            if (loginResult.Succeeded)
             {
                 return View(userInfo);
             }
-            User user = new User
+            User? existingUser = await userManager.FindByEmailAsync(userInfo[1]);
+            if (existingUser != null)
             {
-                UserName = Transliterator.Transliterator.ConvertToTranslit(userInfo[0]!),
-                Email = userInfo[1]
-            };
-            var result =await userManager.CreateAsync(user);
-            if(result.Succeeded)
-            {
-                result = await userManager.AddLoginAsync(user, loginInfo);
+                var result = await userManager.AddLoginAsync(existingUser, loginInfo);
+
                 if (result.Succeeded)
                 {
-                    await signInManager.SignInAsync(user, isPersistent: false);
+                    await signInManager.SignInAsync(existingUser, isPersistent: false);
                     return View(userInfo);
                 }
             }
             else
             {
-                User? findetUser = await userManager.FindByEmailAsync(userInfo[1]);
-                    //Users.FirstOrDefaultAsync(t => t.NormalizedEmail == user.Email!.ToUpper());
-                if(findetUser != null)
+                User user = new User
                 {
-                    await userManager.AddLoginAsync(findetUser, loginInfo);
-                    await signInManager.SignInAsync(findetUser, isPersistent: false);
-                    return View(userInfo);
+                    UserName = Transliterator.Transliterator.ConvertToTranslit(userInfo[0]!),
+                    Email = userInfo[1]
+                };
+                var result = await userManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    result = await userManager.AddLoginAsync(user, loginInfo);
+                    if (result.Succeeded)
+                    {
+                        await signInManager.SignInAsync(user, isPersistent: false);
+                        return View(userInfo);
+                    }
+                    
                 }
-                
+                errorType = result.Errors.FirstOrDefault()!.Description;
+                //else
+                //{
+                //    User? findetUser = await userManager.FindByEmailAsync(userInfo[1]);
+                //    //Users.FirstOrDefaultAsync(t => t.NormalizedEmail == user.Email!.ToUpper());
+                //    if (findetUser != null)
+                //    {
+                //        await userManager.AddLoginAsync(findetUser, loginInfo);
+                //        await signInManager.SignInAsync(findetUser, isPersistent: false);
+                //        return View(userInfo);
+                //    }
+
+                //}
             }
-            return RedirectToAction(nameof(AccessDenied));
+
+
+            //return RedirectToAction(nameof(AccessDenied));
+            return View(nameof(AccessDenied), errorType);
         }
         public IActionResult AccessDenied()
         {
